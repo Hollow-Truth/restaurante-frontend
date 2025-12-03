@@ -1,4 +1,4 @@
 export const environment = {
-      production: true,
-      apiUrl: 'https://backend-restaurante-wzip.onrender.com/api'
-    };
+  production: true,
+  apiUrl: 'https://backend-restaurante-wzip.onrender.com/api' 
+};
