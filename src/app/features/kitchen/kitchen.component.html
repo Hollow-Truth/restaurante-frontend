@@ -1,0 +1,201 @@
+<p-toast position="top-right"></p-toast>
+
+<!-- LAYOUT PRINCIPAL -->
+<div class="flex flex-column w-full surface-ground" style="min-height: 100%;">
+
+    <!-- ================================================= -->
+    <!-- 1. BARRA SUPERIOR (Transparente / Flotante) -->
+    <!-- ================================================= -->
+    <div class="flex align-items-center justify-content-between px-3 py-2 flex-shrink-0">
+        
+        <!-- Izquierda: Título y Contexto -->
+        <!-- AJUSTE: pl-5 es suficiente para librar el botón hamburguesa sin centrar demasiado el texto -->
+        <div class="flex align-items-center gap-2 pl-5 md:pl-0"> 
+            <div class="flex w-2rem h-2rem bg-blue-500 border-round align-items-center justify-content-center text-white flex-shrink-0 shadow-1">
+                <i class="pi pi-box text-sm"></i>
+            </div>
+            <div class="flex flex-column">
+                <span class="font-bold text-900 text-lg line-height-2">Cocina</span>
+                <span class="text-xs text-500 hidden sm:block">Producción diaria</span>
+            </div>
+        </div>
+
+        <!-- Derecha: Acciones -->
+        <div class="flex align-items-center gap-2">
+            <button pButton icon="pi pi-refresh" class="p-button-rounded p-button-text p-button-plain bg-white shadow-1 text-700 w-2rem h-2rem" 
+                    pTooltip="Recargar Datos" tooltipPosition="left" (click)="cargarDatos()"></button>
+        </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- 2. ÁREA DE TRABAJO -->
+    <!-- ================================================= -->
+    <div class="flex flex-column lg:flex-row px-2 md:px-3 pb-3 gap-3">
+
+        <!-- IZQUIERDA: FORMULARIO DE PRODUCCIÓN -->
+        <div class="w-full lg:w-5 bg-white border-round-2xl shadow-2 flex flex-column border-1 surface-border">
+            
+            <!-- Header Panel Interno -->
+            <div class="p-3 border-bottom-1 surface-border bg-gray-50 flex justify-content-between align-items-center border-round-top-2xl">
+                <h2 class="text-lg font-bold text-900 m-0">👨‍🍳 Nueva Orden</h2>
+                <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 border-round font-bold">Manual</span>
+            </div>
+
+            <!-- Cuerpo -->
+            <div class="p-3 md:p-4">
+                
+                <!-- PASO 1: PLATO -->
+                <div class="mb-5">
+                    <div class="flex align-items-center gap-2 mb-3">
+                        <!-- Círculo Número 1 (Con z-1 para asegurar visibilidad) -->
+                        <div class="bg-blue-600 text-white w-2rem h-2rem border-circle flex align-items-center justify-content-center text-sm font-bold flex-shrink-0 shadow-1 z-1 relative">1</div>
+                        <span class="font-bold text-900 text-base">Plato Final</span>
+                    </div>
+                    
+                    <div class="surface-card p-3 border-round-xl border-1 surface-border shadow-none">
+                        <div class="field mb-3">
+                            <label class="text-sm font-medium text-700 mb-1 block">¿Qué vas a cocinar?</label>
+                            <p-dropdown [options]="platos" [(ngModel)]="selectedDish" optionLabel="name" 
+                                        placeholder="Selecciona..." styleClass="w-full border-none shadow-none bg-gray-50 border-round-lg" [filter]="true"
+                                        appendTo="body">
+                                <ng-template pTemplate="selectedItem">
+                                    <div *ngIf="selectedDish" class="flex align-items-center gap-2">
+                                        <i class="pi pi-tag text-blue-500"></i>
+                                        <span class="font-bold text-900 text-sm md:text-base">{{ selectedDish.name }}</span>
+                                    </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </div>
+                        
+                        <div class="field mb-0">
+                            <label class="text-sm font-medium text-700 mb-1 block">Cantidad Obtenida</label>
+                            <!-- CORRECCIÓN: Input redondeado (border-round-2xl) para que coincida con el estilo -->
+                            <div class="flex align-items-center bg-gray-50 border-round-2xl p-1 w-full border-1 surface-border">
+                                <button pButton icon="pi pi-minus" class="p-button-rounded p-button-text p-button-secondary w-3rem h-3rem flex-shrink-0" (click)="quantityCooked = Math.max(1, quantityCooked - 1)"></button>
+                                
+                                <p-inputNumber [(ngModel)]="quantityCooked" [min]="1" 
+                                               inputStyleClass="text-center font-bold text-xl border-none shadow-none bg-transparent w-full" 
+                                               class="flex-1 w-full"></p-inputNumber>
+                                
+                                <button pButton icon="pi pi-plus" class="p-button-rounded p-button-text p-button-secondary w-3rem h-3rem flex-shrink-0" (click)="quantityCooked = quantityCooked + 1"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEPARADOR -->
+                <div class="border-top-1 surface-border mb-4"></div>
+
+                <!-- PASO 2: INSUMOS -->
+                <div class="mb-2">
+                    <div class="flex align-items-center gap-2 mb-3">
+                        <!-- Círculo Número 2 -->
+                        <div class="bg-blue-600 text-white w-2rem h-2rem border-circle flex align-items-center justify-content-center text-sm font-bold flex-shrink-0 shadow-1 z-1 relative">2</div>
+                        <span class="font-bold text-900 text-base">Ingredientes (Gasto)</span>
+                    </div>
+                    
+                    <!-- FORMULARIO INGREDIENTES -->
+                    <div class="bg-blue-50 p-3 border-round-xl mb-3 border-1 border-blue-100">
+                        <div class="grid formgrid p-fluid align-items-end m-0">
+                            <div class="col-12 sm:col-6 pl-0 pr-0 sm:pr-2 mb-2 sm:mb-0">
+                                <label class="text-xs text-gray-600 mb-1 block font-bold">Insumo</label>
+                                <p-dropdown [options]="insumos" [(ngModel)]="tempIngredient" optionLabel="name" 
+                                            placeholder="Selecciona..." styleClass="w-full text-sm border-none shadow-none border-round-lg" [filter]="true" appendTo="body"></p-dropdown>
+                            </div>
+                            <div class="col-8 sm:col-3 pl-0 pr-2">
+                                <label class="text-xs text-gray-600 mb-1 block font-bold">Cant.</label>
+                                <p-inputNumber [(ngModel)]="tempQty" [min]="0.1" [maxFractionDigits]="2" 
+                                               placeholder="0.0" class="w-full p-inputnumber-sm border-round-lg" inputStyleClass="text-center border-none"></p-inputNumber>
+                            </div>
+                            <div class="col-4 sm:col-3 pl-0 pr-0">
+                                <label class="text-xs mb-1 block opacity-0">Add</label> 
+                                <button pButton icon="pi pi-plus" label="Add" class="w-full p-button-primary p-button-sm font-bold justify-content-center border-round-lg" 
+                                        (click)="agregarIngrediente()"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Agregados -->
+                    <div class="flex flex-column gap-2 mt-3">
+                        <div *ngFor="let item of currentIngredients; let i = index" 
+                             class="flex justify-content-between align-items-center p-3 surface-card border-1 surface-border border-round-lg hover:surface-50 transition-colors shadow-none">
+                            <div class="flex align-items-center gap-2 overflow-hidden">
+                                <div class="w-2rem h-2rem bg-gray-100 border-round flex align-items-center justify-content-center flex-shrink-0">
+                                    <i class="pi pi-box text-gray-500"></i>
+                                </div>
+                                <div class="flex flex-column overflow-hidden">
+                                    <span class="font-bold text-sm text-900 white-space-nowrap text-overflow-ellipsis">{{ item.ingredient.name }}</span>
+                                    <span class="text-xs text-500">Insumo</span>
+                                </div>
+                            </div>
+                            <div class="flex align-items-center gap-2 flex-shrink-0">
+                                <span class="text-xs md:text-sm font-bold text-red-600 bg-red-50 px-2 py-1 border-round white-space-nowrap">- {{ item.quantity }} {{ item.ingredient.base_unit }}</span>
+                                <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger p-button-sm w-2rem h-2rem" (click)="borrarIngrediente(i)"></button>
+                            </div>
+                        </div>
+                        
+                        <div *ngIf="currentIngredients.length === 0" class="text-center p-4 border-1 border-dashed surface-border border-round-xl bg-gray-50 opacity-60">
+                            <p class="text-sm text-500 m-0">No has agregado ingredientes.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer: Botón Guardar -->
+            <div class="p-4 bg-white border-top-1 surface-border border-round-bottom-xl mt-auto">
+                <button pButton label="GUARDAR PRODUCCIÓN" icon="pi pi-check-circle" 
+                        class="w-full p-button-lg shadow-2 border-round-xl font-bold" 
+                        style="background-color: var(--text-dark); border: none;"
+                        (click)="guardarProduccion()"></button>
+            </div>
+        </div>
+
+        <!-- DERECHA: DESPENSA / STOCK DISPONIBLE -->
+        <div class="w-full lg:w-7 bg-white border-round-2xl shadow-2 flex flex-column border-1 surface-border">
+            
+            <div class="p-3 border-bottom-1 surface-border bg-white border-round-top-2xl flex justify-content-between align-items-center">
+                <div class="flex align-items-center gap-2">
+                    <i class="pi pi-list text-gray-400"></i>
+                    <h2 class="text-lg font-bold text-900 m-0">Stock en Despensa</h2>
+                </div>
+                <span class="text-xs font-bold text-gray-700 bg-gray-100 px-2 py-1 border-round">{{ insumos.length }} items</span>
+            </div>
+
+            <div class="p-3">
+                <div class="grid m-0">
+                    <div class="col-12 sm:col-6 md:col-4 p-2" *ngFor="let item of insumos">
+                        <div class="surface-card p-3 border-round-xl border-1 surface-border hover:border-blue-500 transition-colors cursor-default h-full flex flex-column shadow-none relative overflow-hidden">
+                            
+                            <!-- Indicador Estado -->
+                            <div class="absolute top-0 left-0 h-full w-4px" 
+                                 [ngClass]="{'bg-green-500': item.current_stock > 5, 'bg-red-500': item.current_stock <= 5}"></div>
+
+                            <div class="flex justify-content-between align-items-start mb-3 pl-2">
+                                <div class="w-2rem h-2rem bg-blue-50 text-blue-500 border-round flex align-items-center justify-content-center">
+                                    <i class="pi pi-box"></i>
+                                </div>
+                            </div>
+
+                            <span class="font-bold text-900 text-sm mb-1 line-height-2 block pl-2">{{ item.name }}</span>
+                            
+                            <div class="mt-auto flex align-items-baseline gap-1 pl-2">
+                                <span class="text-2xl font-bold text-900">{{ item.current_stock }}</span>
+                                <span class="text-sm text-500 font-medium">{{ item.base_unit }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estado Vacío -->
+                    <div class="col-12" *ngIf="insumos.length === 0">
+                        <div class="flex flex-column align-items-center justify-content-center py-6 text-gray-400">
+                            <i class="pi pi-shopping-cart text-5xl mb-2 opacity-50"></i>
+                            <p class="m-0 text-sm">Despensa vacía.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

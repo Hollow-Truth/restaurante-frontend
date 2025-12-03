@@ -1,0 +1,93 @@
+<p-toast position="top-right"></p-toast>
+
+<div class="flex flex-column w-full surface-ground" style="min-height: 100%;">
+
+    <div class="flex align-items-center justify-content-between px-4 py-2 flex-shrink-0">
+        <div class="flex align-items-center gap-2 pl-6 md:pl-0">
+            <div class="flex w-2rem h-2rem bg-gray-900 border-round align-items-center justify-content-center text-white flex-shrink-0 shadow-1">
+                <i class="pi pi-shopping-cart text-sm"></i>
+            </div>
+            <div class="flex flex-column">
+                <span class="font-bold text-900 text-lg line-height-2">Compras</span>
+                <span class="text-xs text-500">Reabastecimiento</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 p-3 flex justify-content-center">
+        <div class="w-full md:w-8 lg:w-6">
+            
+            <div class="surface-card border-round-2xl shadow-2 p-0 border-1 surface-border overflow-hidden">
+                <div class="p-4 border-bottom-1 surface-border bg-gray-50 flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="text-lg font-bold m-0 text-900">Nueva Compra</h2>
+                        <p class="text-sm text-500 m-0 mt-1">Ingresa stock al almacén</p>
+                    </div>
+                    <!-- Icono decorativo -->
+                    <i class="pi pi-truck text-3xl text-gray-300"></i>
+                </div>
+
+                <div class="p-4 p-fluid">
+                    
+                    <!-- CAJA -->
+                    <div class="field mb-4">
+                        <label class="text-xs font-bold text-500 uppercase mb-2 block">1. Origen del Dinero</label>
+                        <p-dropdown [options]="cajasOptions" [(ngModel)]="selectedBox" optionLabel="date" 
+                                    placeholder="Selecciona caja..." emptyMessage="No hay cajas abiertas"
+                                    styleClass="w-full border-round-xl border-1">
+                            <ng-template pTemplate="selectedItem">
+                                <div *ngIf="selectedBox" class="flex align-items-center gap-2">
+                                    <span class="font-bold text-900">Caja #{{selectedBox.id}}</span>
+                                    <span class="text-sm text-green-600 bg-green-50 px-2 border-round font-medium">Saldo: {{selectedBox.current_balance}} Bs</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+
+                    <div class="border-top-1 surface-border mb-4 border-dashed"></div>
+
+                    <!-- PRODUCTO -->
+                    <div class="field mb-4">
+                        <label class="text-xs font-bold text-500 uppercase mb-2 block">2. Detalle Compra</label>
+                        <div class="mb-3">
+                            <label class="text-sm font-medium text-900 mb-1 block">Insumo</label>
+                            <p-dropdown [options]="insumos" [(ngModel)]="selectedProduct" optionLabel="name" 
+                                        placeholder="Buscar..." [filter]="true" filterBy="name" styleClass="w-full border-round-xl"
+                                        [showClear]="true"></p-dropdown>
+                        </div>
+
+                        <div class="formgrid grid">
+                            <div class="field col-6">
+                                <label class="text-sm font-medium text-900 mb-1 block">Cantidad</label>
+                                <p-inputNumber [(ngModel)]="quantity" [min]="0.1" [maxFractionDigits]="2" 
+                                               mode="decimal" [showButtons]="false"
+                                               class="w-full" inputStyleClass="w-full border-round-xl"></p-inputNumber>
+                            </div>
+                            <div class="field col-6">
+                                <label class="text-sm font-medium text-900 mb-1 block">Unidad</label>
+                                <p-dropdown [options]="unidades" [(ngModel)]="selectedUnit" optionLabel="name" 
+                                            placeholder="..." styleClass="w-full border-round-xl"></p-dropdown>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COSTO -->
+                    <div class="field mb-5 bg-gray-50 p-3 border-round-xl border-1 surface-border">
+                        <label class="text-sm font-bold text-900 block mb-2">Costo Total</label>
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon bg-white border-none font-bold text-gray-500">Bs</span>
+                            <p-inputNumber [(ngModel)]="totalCost" [min]="0" [maxFractionDigits]="2" 
+                                           placeholder="0.00" class="w-full" inputStyleClass="w-full border-none shadow-none text-xl font-bold bg-transparent"></p-inputNumber>
+                        </div>
+                    </div>
+
+                    <button pButton label="CONFIRMAR COMPRA" icon="pi pi-check" 
+                            class="w-full p-button-lg border-round-xl shadow-1 font-bold" 
+                            style="background-color: var(--text-dark); border: none;"
+                            [disabled]="!selectedBox || !selectedProduct"
+                            (click)="guardarCompra()"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

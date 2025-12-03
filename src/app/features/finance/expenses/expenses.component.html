@@ -1,0 +1,82 @@
+<p-toast position="top-right"></p-toast>
+
+<div class="flex flex-column w-full surface-ground" style="min-height: 100%;">
+
+    <div class="flex align-items-center justify-content-between px-4 py-2 flex-shrink-0">
+        <div class="flex align-items-center gap-2 pl-6 md:pl-0">
+            <div class="flex w-2rem h-2rem bg-red-500 border-round align-items-center justify-content-center text-white flex-shrink-0 shadow-1">
+                <i class="pi pi-minus-circle text-sm"></i>
+            </div>
+            <div class="flex flex-column">
+                <span class="font-bold text-900 text-lg line-height-2">Gastos</span>
+                <span class="text-xs text-500">Salidas de dinero</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 p-3 flex justify-content-center">
+        <div class="w-full md:w-6 lg:w-5">
+            
+            <div class="surface-card border-round-2xl shadow-2 p-0 border-1 surface-border overflow-hidden">
+                <div class="p-4 border-bottom-1 surface-border bg-gray-50">
+                    <h2 class="text-lg font-bold m-0 text-900">Registrar Salida</h2>
+                    <p class="text-sm text-500 m-0 mt-1">Pago de servicios o sueldos</p>
+                </div>
+
+                <div class="p-4 p-fluid">
+                    
+                    <!-- CAJA -->
+                    <div class="field mb-4">
+                        <label class="font-bold text-sm text-900 mb-2 block">Origen de Fondos</label>
+                        <p-dropdown [options]="cajas" [(ngModel)]="selectedBox" optionLabel="date" 
+                                    placeholder="Selecciona caja..." emptyMessage="No hay cajas abiertas"
+                                    styleClass="w-full border-round-xl">
+                            <ng-template pTemplate="selectedItem">
+                                <div *ngIf="selectedBox" class="flex align-items-center gap-2">
+                                    <i class="pi pi-wallet text-orange-500"></i>
+                                    <span class="font-bold text-900">Caja #{{selectedBox.id}}</span>
+                                    <span class="text-sm text-green-600 bg-green-50 px-2 border-round">Disp: {{selectedBox.current_balance}} Bs</span>
+                                </div>
+                            </ng-template>
+                            <ng-template let-caja pTemplate="item">
+                                <div class="flex justify-content-between w-full">
+                                    <span>Caja #{{caja.id}}</span>
+                                    <span class="font-bold">{{caja.current_balance}} Bs</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+
+                    <!-- DETALLES -->
+                    <div class="formgrid grid">
+                        <div class="field col-12 mb-3">
+                            <label class="text-sm font-medium text-700">Categoría</label>
+                            <p-dropdown [options]="categorias" [(ngModel)]="selectedCategory" optionLabel="label" 
+                                        placeholder="Selecciona..." styleClass="w-full border-round-xl"></p-dropdown>
+                        </div>
+                        <div class="field col-12 mb-4">
+                            <label class="text-sm font-medium text-700">Descripción</label>
+                            <input type="text" pInputText [(ngModel)]="description" placeholder="Ej: Pago Luz Enero" class="w-full border-round-xl">
+                        </div>
+                    </div>
+
+                    <!-- MONTO -->
+                    <div class="field mb-5">
+                        <label class="text-sm font-bold text-900 mb-2 block">Monto a Pagar</label>
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon bg-red-50 text-red-600 border-red-100 font-bold border-round-left-xl">Bs</span>
+                            <p-inputNumber [(ngModel)]="amount" [min]="0" [maxFractionDigits]="2" placeholder="0.00" 
+                                           class="w-full" inputStyleClass="w-full border-round-right-xl font-bold text-xl text-red-600"></p-inputNumber>
+                        </div>
+                    </div>
+
+                    <button pButton label="REGISTRAR GASTO" icon="pi pi-check" 
+                            class="w-full p-button-lg border-round-xl shadow-1 font-bold p-button-danger" 
+                            [disabled]="!selectedBox"
+                            (click)="registrarGasto()"></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

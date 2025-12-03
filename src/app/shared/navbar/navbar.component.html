@@ -1,0 +1,77 @@
+<!-- SIDEBAR PC (Fijo, se muestra solo en pantallas medianas hacia arriba) -->
+<div class="hidden md:flex flex-column h-full bg-white border-right-1 border-gray-200 shadow-none">
+    
+    <!-- Header PC -->
+    <div class="p-4 mt-1 mb-2 flex align-items-center gap-2">
+        <div class="w-2rem h-2rem bg-orange-500 border-round flex align-items-center justify-content-center">
+            <i class="pi pi-bolt text-white text-xs"></i>
+        </div>
+        <h2 class="text-900 m-0 font-bold text-lg">Restaurante</h2>
+    </div>
+
+    <!-- Menú Items (Scrollable si es muy largo) -->
+    <div class="flex-grow-1 flex flex-column gap-1 p-3 overflow-y-auto">
+        <div *ngFor="let item of items" 
+             class="p-2 border-round cursor-pointer transition-colors transition-duration-150 flex align-items-center gap-3 text-sm"
+             [ngClass]="isActive(item.routerLink) ? 'bg-gray-900 text-white' : 'text-600 hover:bg-gray-50 hover:text-900'"
+             (click)="navegar(item)">
+             <i [class]="item.icon"></i>
+             <span class="font-medium">{{ item.label }}</span>
+        </div>
+    </div>
+
+    <!-- Footer PC -->
+    <div class="p-3 border-top-1 border-gray-100">
+        <div class="flex align-items-center gap-3 mb-3 px-2">
+            <div class="w-2rem h-2rem border-circle bg-gray-200 flex align-items-center justify-content-center text-gray-600 font-bold text-xs">
+                {{ currentUser.charAt(0) | uppercase }}
+            </div>
+            <div class="flex flex-column overflow-hidden">
+                <span class="text-sm font-bold text-900 white-space-nowrap text-overflow-ellipsis">{{ currentUser }}</span>
+                <span class="text-xs text-500">{{ role }}</span>
+            </div>
+        </div>
+        <button pButton label="Cerrar Sesión" icon="pi pi-sign-out" 
+                class="p-button-danger p-button-text w-full text-sm" 
+                (click)="logout()"></button>
+    </div>
+</div>
+
+<!-- ======================================================= -->
+<!-- SIDEBAR MÓVIL (Overlay controlado por LayoutService) -->
+<!-- ======================================================= -->
+<p-sidebar [(visible)]="sidebarVisible">
+    <div class="flex align-items-center gap-2 mb-4">
+        <div class="w-2rem h-2rem bg-orange-500 border-round flex align-items-center justify-content-center">
+            <i class="pi pi-bolt text-white text-xs"></i>
+        </div>
+        <h3 class="text-900 m-0">Menú</h3>
+    </div>
+    
+    <div class="flex flex-column gap-2">
+        <div *ngFor="let item of items" 
+             class="p-3 border-round cursor-pointer flex align-items-center gap-3"
+             [ngClass]="isActive(item.routerLink) ? 'bg-gray-900 text-white' : 'text-700 hover:surface-100'"
+             (click)="navegar(item)">
+             <i [class]="item.icon"></i>
+             <span>{{ item.label }}</span>
+        </div>
+
+        <div class="border-top-1 border-gray-200 my-2"></div>
+
+        <!-- Info Usuario Móvil -->
+        <div class="flex align-items-center gap-3 p-2">
+             <div class="w-2rem h-2rem border-circle bg-gray-200 flex align-items-center justify-content-center text-gray-600 font-bold text-xs">
+                {{ currentUser.charAt(0) | uppercase }}
+            </div>
+            <div class="flex flex-column">
+                <span class="text-sm font-bold text-900">{{ currentUser }}</span>
+                <span class="text-xs text-500">{{ role }}</span>
+            </div>
+        </div>
+
+        <div class="p-3 text-red-500 cursor-pointer mt-2 flex align-items-center gap-3 font-medium hover:bg-red-50 border-round" (click)="logout()">
+            <i class="pi pi-sign-out"></i> Salir
+        </div>
+    </div>
+</p-sidebar>

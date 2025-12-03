@@ -1,0 +1,64 @@
+<div class="flex flex-column w-full surface-ground" style="min-height: 100%;">
+
+    <div class="flex align-items-center justify-content-between px-4 py-2 flex-shrink-0">
+        <div class="flex align-items-center gap-2 pl-6 md:pl-0">
+            <div class="flex w-2rem h-2rem bg-indigo-500 border-round align-items-center justify-content-center text-white flex-shrink-0 shadow-1">
+                <i class="pi pi-list text-sm"></i>
+            </div>
+            <div class="flex flex-column">
+                <span class="font-bold text-900 text-lg line-height-2">Movimientos</span>
+                <span class="text-xs text-500">Auditoría completa</span>
+            </div>
+        </div>
+        <button pButton icon="pi pi-refresh" class="p-button-rounded p-button-text p-button-plain bg-white shadow-1 text-700 w-2rem h-2rem" (click)="cargarDatos()"></button>
+    </div>
+
+    <div class="flex-1 p-3 overflow-hidden">
+        <div class="surface-card border-round-2xl shadow-2 h-full flex flex-column border-1 surface-border overflow-hidden">
+            
+            <!-- Tabla con Scroll Interno -->
+            <p-table [value]="movimientos" [paginator]="true" [rows]="10" responsiveLayout="scroll" 
+                     styleClass="p-datatable-sm p-datatable-striped" 
+                     [scrollable]="true" scrollHeight="flex">
+                
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="timestamp" style="min-width:150px">Fecha <p-sortIcon field="timestamp"></p-sortIcon></th>
+                        <th style="min-width:100px">Tipo</th>
+                        <th style="min-width:150px">Categoría</th>
+                        <th style="min-width:200px">Descripción</th>
+                        <th pSortableColumn="amount" class="text-right" style="min-width:120px">Monto <p-sortIcon field="amount"></p-sortIcon></th>
+                    </tr>
+                </ng-template>
+                
+                <ng-template pTemplate="body" let-mov>
+                    <tr class="text-sm">
+                        <td class="font-medium text-700">{{ mov.timestamp | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                            <span class="px-2 py-1 border-round text-xs font-bold" 
+                                  [ngClass]="mov.type === 'IN' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                                {{ mov.type === 'IN' ? 'INGRESO' : 'EGRESO' }}
+                            </span>
+                        </td>
+                        <td><span class="text-gray-900">{{ mov.category }}</span></td>
+                        <td><span class="text-gray-600">{{ mov.description }}</span></td>
+                        <td class="text-right font-bold text-base" 
+                            [class.text-green-600]="mov.type === 'IN'"
+                            [class.text-red-600]="mov.type === 'OUT'">
+                            {{ mov.type === 'IN' ? '+' : '-' }}{{ mov.amount }} Bs
+                        </td>
+                    </tr>
+                </ng-template>
+                
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="5" class="text-center p-6 text-gray-400">
+                            <i class="pi pi-file text-4xl mb-2"></i>
+                            <p class="m-0">No se encontraron movimientos.</p>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>

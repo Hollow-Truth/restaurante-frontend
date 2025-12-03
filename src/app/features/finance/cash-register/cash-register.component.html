@@ -1,0 +1,132 @@
+<p-toast position="top-right"></p-toast>
+
+<!-- LAYOUT PRINCIPAL -->
+<div class="flex flex-column w-full surface-ground" style="min-height: 100%;">
+
+    <!-- BARRA SUPERIOR -->
+    <div class="flex align-items-center justify-content-between px-4 py-2 flex-shrink-0">
+        <div class="flex align-items-center gap-2 pl-6 md:pl-0">
+            <div class="flex w-2rem h-2rem bg-green-500 border-round align-items-center justify-content-center text-white flex-shrink-0 shadow-1">
+                <i class="pi pi-wallet text-sm"></i>
+            </div>
+            <div class="flex flex-column">
+                <span class="font-bold text-900 text-lg line-height-2">Tesorería</span>
+                <span class="text-xs text-500">Control de Caja</span>
+            </div>
+        </div>
+        <button pButton icon="pi pi-refresh" class="p-button-rounded p-button-text p-button-plain bg-white shadow-1 text-700 w-2rem h-2rem" 
+                pTooltip="Actualizar" tooltipPosition="left" (click)="cargarDatos()"></button>
+    </div>
+
+    <!-- ÁREA DE TRABAJO -->
+    <div class="flex flex-column lg:flex-row px-3 pb-3 gap-3 flex-1 overflow-hidden">
+
+        <!-- IZQUIERDA: ESTADO ACTUAL -->
+        <div class="w-full lg:w-4 flex flex-column gap-3">
+            
+            <!-- TARJETA DE ESTADO -->
+            <div class="surface-card border-round-2xl shadow-2 p-4 h-full border-1 surface-border flex flex-column justify-content-center align-items-center text-center relative overflow-hidden">
+                
+                <!-- Decoración de fondo -->
+                <div class="absolute top-0 left-0 w-full h-1rem" [ngClass]="cajaAbierta ? 'bg-green-500' : 'bg-gray-300'"></div>
+
+                <div class="mb-4 mt-2">
+                    <div class="w-6rem h-6rem border-circle flex align-items-center justify-content-center mb-3 mx-auto shadow-1"
+                         [ngClass]="cajaAbierta ? 'bg-green-50 text-green-500' : 'bg-gray-50 text-gray-400'">
+                        <i class="pi" [ngClass]="cajaAbierta ? 'pi-lock-open text-5xl' : 'pi-lock text-5xl'"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-900 m-0 mb-1">{{ cajaAbierta ? 'Caja Abierta' : 'Caja Cerrada' }}</h2>
+                    <p class="text-500 m-0 text-sm">{{ cajaAbierta ? 'El sistema está operativo' : 'Las ventas están bloqueadas' }}</p>
+                </div>
+
+                <div *ngIf="cajaAbierta" class="mb-5 w-full">
+                    <div class="bg-green-50 border-round-xl p-3 border-1 border-green-100">
+                        <span class="text-xs font-bold text-green-600 uppercase tracking-wide block mb-1">Saldo Teórico</span>
+                        <span class="text-4xl font-bold text-green-700">{{ cajaAbierta.current_balance | number:'1.2-2' }} Bs</span>
+                    </div>
+                    <small class="text-500 mt-2 block">Inicio: {{ cajaAbierta.start_amount }} Bs • {{ cajaAbierta.date }}</small>
+                </div>
+
+                <button *ngIf="!cajaAbierta" pButton label="APERTURAR DÍA" icon="pi pi-key" 
+                        class="w-full p-button-lg shadow-2 border-round-xl font-bold" 
+                        (click)="showOpenModal = true"></button>
+
+                <button *ngIf="cajaAbierta" pButton label="REALIZAR CIERRE" icon="pi pi-lock" 
+                        class="w-full p-button-lg p-button-danger shadow-2 border-round-xl font-bold" 
+                        (click)="prepararCierre()"></button>
+            </div>
+        </div>
+
+        <!-- DERECHA: HISTORIAL -->
+        <div class="w-full lg:w-8 bg-white border-round-2xl shadow-2 flex flex-column border-1 surface-border overflow-hidden h-full">
+            <div class="p-3 border-bottom-1 surface-border flex justify-content-between align-items-center">
+                <span class="font-bold text-900">Historial de Cierres</span>
+            </div>
+            <div class="flex-1 overflow-auto p-0">
+                <p-table [value]="cajas" [rowHover]="true" styleClass="p-datatable-sm" responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="bg-white text-xs uppercase text-500 font-bold border-bottom-1 surface-border pl-4">Fecha</th>
+                            <th class="bg-white text-xs uppercase text-500 font-bold border-bottom-1 surface-border">Estado</th>
+                            <th class="bg-white text-xs uppercase text-500 font-bold border-bottom-1 surface-border text-right">Inicial</th>
+                            <th class="bg-white text-xs uppercase text-500 font-bold border-bottom-1 surface-border text-right">Final (Sis)</th>
+                            <th class="bg-white text-xs uppercase text-500 font-bold border-bottom-1 surface-border text-right">Real</th>
+                            <th class="bg-white text-xs uppercase text-500 font-bold border-bottom-1 surface-border text-right pr-4">Dif.</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-caja>
+                        <tr class="text-sm">
+                            <td class="pl-4 font-medium text-900">{{ caja.date }}</td>
+                            <td>
+                                <span class="px-2 py-1 border-round text-xs font-bold" 
+                                      [ngClass]="caja.is_closed ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'">
+                                    {{ caja.is_closed ? 'CERRADA' : 'ABIERTA' }}
+                                </span>
+                            </td>
+                            <td class="text-right text-600">{{ caja.start_amount }}</td>
+                            <td class="text-right font-bold text-900">{{ caja.is_closed ? caja.end_amount_system : caja.current_balance }}</td>
+                            <td class="text-right text-600">{{ caja.end_amount_real || '-' }}</td>
+                            <td class="text-right pr-4">
+                                <span *ngIf="caja.difference < 0" class="text-red-500 font-bold">{{ caja.difference }}</span>
+                                <span *ngIf="caja.difference >= 0" class="text-green-500 font-bold">+{{ caja.difference }}</span>
+                                <span *ngIf="caja.difference == null" class="text-gray-400">-</span>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODALES (Estilo limpio) -->
+<p-dialog header="🔓 Apertura de Caja" [(visible)]="showOpenModal" [modal]="true" [style]="{width: '400px'}" [draggable]="false" [resizable]="false" styleClass="border-round-xl overflow-hidden">
+    <div class="p-4">
+        <label class="font-bold text-sm block mb-2 text-900">Monto Inicial (Cambio)</label>
+        <p-inputNumber [(ngModel)]="montoInicial" mode="currency" currency="BOB" locale="es-BO" [min]="0" class="w-full" inputStyleClass="w-full border-round-xl"></p-inputNumber>
+        <small class="block mt-2 text-500 line-height-3">Ingresa el dinero físico que hay en el cajón al iniciar el turno.</small>
+        
+        <div class="flex justify-content-end gap-2 mt-5">
+            <button pButton label="Cancelar" class="p-button-text text-600" (click)="showOpenModal = false"></button>
+            <button pButton label="Abrir Caja" icon="pi pi-check" class="bg-gray-900 border-none border-round-lg px-4" (click)="abrirCaja()"></button>
+        </div>
+    </div>
+</p-dialog>
+
+<p-dialog header="🔒 Arqueo de Caja" [(visible)]="showCloseModal" [modal]="true" [style]="{width: '400px'}" [draggable]="false" [resizable]="false" styleClass="border-round-xl overflow-hidden">
+    <div class="p-4">
+        <div class="bg-orange-50 p-3 border-round-lg mb-4 flex justify-content-between align-items-center">
+            <span class="text-sm font-bold text-orange-800">Esperado:</span>
+            <span class="text-xl font-bold text-orange-900">{{ cajaAbierta?.current_balance }} Bs</span>
+        </div>
+
+        <label class="font-bold text-sm block mb-2 text-900">Dinero Contado (Real)</label>
+        <p-inputNumber [(ngModel)]="montoArqueo" mode="currency" currency="BOB" locale="es-BO" [min]="0" class="w-full" inputStyleClass="w-full border-round-xl"></p-inputNumber>
+        
+        <div class="flex justify-content-end gap-2 mt-5">
+            <button pButton label="Cancelar" class="p-button-text text-600" (click)="showCloseModal = false"></button>
+            <button pButton label="Confirmar Cierre" icon="pi pi-lock" class="p-button-danger border-round-lg px-4" (click)="cerrarCaja()"></button>
+        </div>
+    </div>
+</p-dialog>

@@ -1,0 +1,147 @@
+<p-toast position="top-right"></p-toast>
+
+<!-- LAYOUT PRINCIPAL -->
+<!-- Usamos min-h-full para permitir que la página crezca naturalmente -->
+<div class="flex flex-column w-full surface-ground" style="min-height: 100%;">
+
+  <!-- ================================================= -->
+  <!-- 1. BARRA SUPERIOR (POS Toolbar) -->
+  <!-- ================================================= -->
+  <div class="flex align-items-center justify-content-between px-3 py-2 flex-shrink-0">
+      
+      <!-- Izquierda: Título -->
+      <!-- pl-6 en móvil para respetar el botón del menú lateral -->
+      <div class="flex align-items-center gap-2 pl-6 md:pl-0">
+          <div class="flex w-2rem h-2rem bg-orange-500 border-round align-items-center justify-content-center text-white flex-shrink-0 shadow-1">
+            <i class="pi pi-th-large text-sm"></i>
+          </div>
+          <div class="flex flex-column">
+              <span class="font-bold text-900 text-lg line-height-2">Punto de Venta</span>
+              <span class="text-xs text-500 hidden sm:block">Caja #1 | {{ usuarioActual }}</span>
+          </div>
+      </div>
+
+      <!-- Derecha: Acciones -->
+      <div class="flex align-items-center gap-2">
+          <button pButton icon="pi pi-refresh" class="p-button-rounded p-button-text p-button-plain bg-white shadow-1 text-700 w-2rem h-2rem" 
+                  pTooltip="Recargar Menú" tooltipPosition="left" (click)="cargarMenu()"></button>
+      </div>
+  </div>
+
+  <!-- ================================================= -->
+  <!-- 2. ÁREA DE TRABAJO -->
+  <!-- ================================================= -->
+  <!-- align-items-start es CLAVE: permite que cada columna tenga su propia altura -->
+  <div class="flex flex-column md:flex-row px-2 md:px-3 pb-3 gap-3 align-items-start">
+      
+      <!-- IZQUIERDA: MENÚ (Crece con el contenido) -->
+      <!-- AJUSTE: Agregamos clases de tarjeta (bg-white, border, shadow) para que se noten los bordes -->
+      <div class="w-full md:w-8 lg:w-9 bg-white border-round-2xl shadow-2 border-1 surface-border p-3">
+          <div class="grid m-0">
+              
+              <!-- Tarjetas de Platos -->
+              <div class="col-6 sm:col-4 md:col-4 lg:col-3 xl:col-2 p-1 md:p-2" *ngFor="let plato of menu">
+                  <div class="surface-card border-round-2xl p-3 shadow-1 cursor-pointer hover:shadow-3 transition-duration-200 border-1 border-transparent hover:border-orange-500 h-full flex flex-column relative overflow-hidden group bg-white"
+                       (click)="agregar(plato)">
+                      
+                      <!-- Stock Badge -->
+                      <div class="absolute top-0 right-0 m-2 px-2 py-1 bg-white-alpha-90 border-round shadow-1 text-xs font-bold text-600 z-1 border-1 surface-border">
+                          {{ plato.current_stock }}
+                      </div>
+
+                      <!-- Icono -->
+                      <div class="bg-orange-50 border-round-xl h-6rem w-full flex align-items-center justify-content-center text-4xl mb-3 flex-shrink-0">
+                          🥘
+                      </div>
+
+                      <!-- Info -->
+                      <div class="flex flex-column flex-1 w-full"> 
+                          <div class="font-bold text-900 text-sm mb-1 line-clamp-2" 
+                               pTooltip="{{plato.name}}" tooltipPosition="top">
+                              {{ plato.name }}
+                          </div>
+                          
+                          <div class="mt-auto flex align-items-center justify-content-between pt-2">
+                              <span class="text-lg font-bold text-orange-600">{{ plato.sales_price }} Bs</span>
+                              <i class="pi pi-plus-circle text-orange-500 text-xl opacity-0 group-hover:opacity-100 transition-duration-200"></i>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Estado Vacío -->
+              <div class="col-12" *ngIf="menu.length === 0">
+                  <div class="flex flex-column align-items-center justify-content-center py-8 text-gray-400 bg-white border-round-2xl shadow-none">
+                      <i class="pi pi-inbox text-5xl mb-3 opacity-50"></i>
+                      <p class="font-medium text-sm">Sin productos disponibles</p>
+                  </div>
+              </div>
+
+          </div>
+      </div>
+
+      <!-- DERECHA: TICKET (Sticky) -->
+      <!-- sticky top-0 hace que te siga al bajar en PC -->
+      <div class="w-full md:w-4 lg:w-3 bg-white border-round-2xl shadow-2 flex flex-column border-1 surface-border md:sticky" style="top: 1rem;">
+          
+          <!-- Header Ticket -->
+          <div class="p-3 border-bottom-1 surface-border bg-white border-round-top-2xl flex justify-content-between align-items-center">
+              <div class="flex align-items-center gap-2">
+                  <h2 class="text-lg font-bold text-900 m-0">Orden</h2>
+                  <span class="bg-orange-500 text-white border-round px-2 py-0 text-sm font-bold">{{ carrito.length }}</span>
+              </div>
+              <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger p-button-sm w-2rem h-2rem" 
+                      pTooltip="Vaciar" tooltipPosition="left"
+                      [disabled]="carrito.length === 0"
+                      (click)="carrito = []; calcularTotal()"></button>
+          </div>
+
+          <!-- Lista Items (Altura adaptable, mínimo 200px para que no se vea feo vacío) -->
+          <div class="p-3 flex flex-column gap-2" style="min-height: 200px;">
+              
+              <div *ngFor="let item of carrito; let i = index" 
+                   class="flex align-items-center gap-2 p-2 border-round-xl hover:surface-50 transition-colors border-1 border-transparent hover:border-gray-200">
+                  
+                  <div class="flex align-items-center justify-content-center bg-gray-100 border-round w-2rem h-2rem font-bold text-900 text-sm flex-shrink-0">
+                      {{ item.quantity }}
+                  </div>
+
+                  <div class="flex-1 overflow-hidden">
+                      <div class="font-bold text-900 text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                          {{ item.product.name }}
+                      </div>
+                      <div class="text-xs text-500">{{ item.product.sales_price }} Bs</div>
+                  </div>
+
+                  <div class="font-bold text-900 text-sm flex-shrink-0">
+                      {{ item.subtotal }}
+                  </div>
+
+                  <i class="pi pi-times text-gray-400 hover:text-red-500 cursor-pointer p-1 text-sm" (click)="quitar(i)"></i>
+              </div>
+
+              <!-- Vacío -->
+              <div *ngIf="carrito.length === 0" class="h-full flex flex-column align-items-center justify-content-center text-gray-300 flex-grow-1">
+                  <i class="pi pi-shopping-bag text-5xl mb-2 opacity-20"></i>
+                  <span class="text-sm font-medium">Ticket Vacío</span>
+              </div>
+          </div>
+
+          <!-- Footer Total -->
+          <div class="p-3 bg-gray-50 border-top-1 surface-border border-round-bottom-2xl">
+              <div class="flex justify-content-between align-items-end mb-3">
+                  <span class="text-gray-600 text-sm font-medium">Total a Pagar</span>
+                  <span class="text-2xl font-bold text-orange-600 line-height-1">{{ total }} Bs</span>
+              </div>
+              
+              <button pButton label="COBRAR" icon="pi pi-wallet" 
+                      class="w-full p-button-lg shadow-2 border-round-xl font-bold"
+                      style="background-color: var(--text-dark); border: none;"
+                      [disabled]="carrito.length === 0" 
+                      (click)="cobrar()"></button>
+          </div>
+
+      </div>
+
+  </div>
+</div>

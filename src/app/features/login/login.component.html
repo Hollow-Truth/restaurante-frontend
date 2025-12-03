@@ -1,0 +1,50 @@
+<p-toast position="top-right"></p-toast>
+
+<!-- FONDO BLANCO LIMPIO -->
+<div class="flex align-items-center justify-content-center min-h-screen w-full bg-white">
+    
+    <!-- CONTENEDOR CENTRADO (Sin bordes ni sombras pesadas) -->
+    <div class="w-full sm:w-25rem p-4">
+        
+        <!-- HEADER: Logo y Bienvenida -->
+        <div class="text-center mb-6">
+            <div class="w-5rem h-5rem bg-orange-50 text-orange-500 border-circle flex align-items-center justify-content-center mx-auto mb-4">
+                <i class="pi pi-bolt text-3xl"></i>
+            </div>
+            <div class="text-900 text-3xl font-bold mb-2">Bienvenido</div>
+            <span class="text-500 text-base">Ingresa a tu cuenta para continuar</span>
+        </div>
+
+        <!-- FORMULARIO -->
+        <div>
+            <label for="username" class="block text-900 font-bold mb-2 text-sm">Usuario</label>
+            <span class="p-input-icon-left w-full mb-4">
+                <i class="pi pi-user text-orange-500"></i>
+                <input id="username" type="text" pInputText [(ngModel)]="username" 
+                       class="w-full p-inputtext-lg bg-gray-50 border-round-xl border-none" 
+                       placeholder="Ej: admin" />
+            </span>
+
+            <label for="password" class="block text-900 font-bold mb-2 text-sm">Contraseña</label>
+            <span class="p-input-icon-left w-full mb-5">
+                <i class="pi pi-lock z-2 text-orange-500"></i>
+                <p-password [(ngModel)]="password" [toggleMask]="true" [feedback]="false" 
+                            styleClass="w-full" 
+                            inputStyleClass="w-full pl-5 p-inputtext-lg bg-gray-50 border-round-xl border-none" 
+                            placeholder="••••••"></p-password>
+            </span>
+
+            <button pButton label="INICIAR SESIÓN" icon="pi pi-arrow-right" iconPos="right" 
+                    class="w-full p-button-lg font-bold border-round-xl shadow-none hover:shadow-2 transition-all"
+                    style="background-color: var(--text-dark); border: none;"
+                    [loading]="isLoading" 
+                    (click)="onLogin()"></button>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="text-center mt-6 text-gray-400 text-xs">
+            © 2024 Restaurante Pro System
+        </div>
+    </div>
+    
+</div>

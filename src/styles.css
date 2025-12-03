@@ -1,1 +1,32 @@
-/* You can add global styles to this file, and also import other style files */
+/* 1. LIBRERÍAS */
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+
+/* 2. VARIABLES */
+:root {
+    --primary-color: #ea580c;
+    --text-dark: #0f172a;
+    --text-gray: #64748b;
+    --bg-app: #f8fafc;
+}
+
+/* 3. RESET BÁSICO */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-app);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden; /* Importante: El scroll lo maneja el layout, no el body */
+}
+
+/* 4. ARREGLOS DE PRIMENG */
+.p-button { border-radius: 8px !important; font-weight: 600 !important; }
+.p-inputtext { border-radius: 8px !important; }
+.surface-card { border-radius: 12px !important; }
+
+/* 5. ELIMINAR ESTILOS VIEJOS DE LAYOUT */
+/* Borra cualquier clase .layout-content o .layout-shifted que tuvieras aquí */
+/* El layout ahora se controla 100% en el HTML con Flexbox */

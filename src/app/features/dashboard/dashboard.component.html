@@ -1,0 +1,102 @@
+<div class="flex flex-column w-full surface-ground" style="min-height: 100%;">
+
+    <!-- HEADER -->
+    <div class="flex align-items-center justify-content-between px-4 py-2 flex-shrink-0">
+        <div class="flex align-items-center gap-2 pl-6 md:pl-0">
+            <div class="flex w-2rem h-2rem bg-indigo-500 border-round align-items-center justify-content-center text-white flex-shrink-0 shadow-1">
+                <i class="pi pi-chart-bar text-sm"></i>
+            </div>
+            <div class="flex flex-column">
+                <span class="font-bold text-900 text-lg line-height-2">Dashboard</span>
+                <span class="text-xs text-500">Resumen financiero</span>
+            </div>
+        </div>
+        <button pButton icon="pi pi-refresh" class="p-button-rounded p-button-text p-button-plain bg-white shadow-1 text-700 w-2rem h-2rem" 
+                pTooltip="Actualizar" tooltipPosition="left" (click)="cargarDatos()"></button>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="flex-1 overflow-y-auto p-3 md:p-4">
+        
+        <div class="grid">
+            
+            <!-- CAJA -->
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card shadow-1 p-3 border-round-xl border-1 surface-border h-full flex flex-column justify-content-between">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <span class="block text-500 font-medium text-sm mb-1">Caja Actual (Ganancia)</span>
+                            <div class="text-900 font-bold text-2xl">{{ summary.balance | number:'1.2-2' }} Bs</div>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-blue-50 border-round w-2.5rem h-2.5rem">
+                            <i class="pi pi-wallet text-blue-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <span class="text-blue-500 font-medium text-xs">Saldo neto en efectivo</span>
+                </div>
+            </div>
+
+            <!-- INGRESOS -->
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card shadow-1 p-3 border-round-xl border-1 surface-border h-full flex flex-column justify-content-between">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <span class="block text-500 font-medium text-sm mb-1">Ingresos Totales</span>
+                            <div class="text-green-600 font-bold text-2xl">+{{ summary.income | number:'1.2-2' }} Bs</div>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-green-50 border-round w-2.5rem h-2.5rem">
+                            <i class="pi pi-arrow-up text-green-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <span class="text-500 text-xs">Ventas realizadas</span>
+                </div>
+            </div>
+
+            <!-- EGRESOS -->
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card shadow-1 p-3 border-round-xl border-1 surface-border h-full flex flex-column justify-content-between">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <span class="block text-500 font-medium text-sm mb-1">Gastos Totales</span>
+                            <div class="text-red-500 font-bold text-2xl">-{{ summary.expense | number:'1.2-2' }} Bs</div>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-red-50 border-round w-2.5rem h-2.5rem">
+                            <i class="pi pi-arrow-down text-red-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <span class="text-500 text-xs">Compras y servicios</span>
+                </div>
+            </div>
+
+            <!-- INVENTARIO -->
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card shadow-1 p-3 border-round-xl border-1 surface-border h-full flex flex-column justify-content-between">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <span class="block text-500 font-medium text-sm mb-1">Valor en Almacén</span>
+                            <!-- AQUÍ SE MUESTRA EL DATO REAL -->
+                            <div class="text-900 font-bold text-2xl">{{ summary.inventory_value | number:'1.2-2' }} Bs</div>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-orange-50 border-round w-2.5rem h-2.5rem">
+                            <i class="pi pi-box text-orange-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <span class="text-500 text-xs">{{ summary.product_count }} productos con stock > 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICO -->
+        <div class="grid mt-3">
+            <div class="col-12">
+                <div class="surface-card p-4 shadow-2 border-round-xl border-1 surface-border">
+                    <div class="flex align-items-center justify-content-between mb-4">
+                        <h3 class="text-lg font-bold text-900 m-0">Flujo de Caja (Últimos 30 días)</h3>
+                    </div>
+                    <p-chart type="bar" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

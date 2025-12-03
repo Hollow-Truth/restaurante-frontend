@@ -1,0 +1,28 @@
+<div class="h-4rem px-4 bg-white border-bottom-1 surface-border flex align-items-center justify-content-between shadow-sm relative z-2">
+    
+    <!-- IZQUIERDA: Título y Menú -->
+    <div class="flex align-items-center gap-3">
+        <!-- Botón Menú (Solo visible en Móvil/Tablet) -->
+        <!-- Llama al servicio para abrir el sidebar -->
+        <button pButton icon="pi pi-bars" 
+                class="md:hidden p-button-text p-button-rounded text-900" 
+                (click)="layoutService.toggleSidebar()"></button>
+
+        <!-- Título Dinámico -->
+        <h2 class="text-xl font-bold text-900 m-0 line-height-1">
+            {{ layoutService.title() }}
+        </h2>
+    </div>
+
+    <!-- DERECHA: Info Usuario -->
+    <div class="flex align-items-center gap-3">
+        <div class="text-right hidden sm:block">
+            <div class="text-sm font-bold text-900">{{ auth.getUsername() }}</div>
+            <div class="text-xs text-500">{{ auth.getUserRole() }}</div>
+        </div>
+        <div class="w-2rem h-2rem bg-orange-500 border-circle flex align-items-center justify-content-center text-white font-bold text-sm">
+            {{ auth.getUsername().charAt(0) | uppercase }}
+        </div>
+    </div>
+
+</div>

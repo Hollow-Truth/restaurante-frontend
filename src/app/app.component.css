@@ -1,0 +1,15 @@
+/* Por defecto ocupa todo el ancho (Login o Móvil) */
+.layout-content {
+    margin-left: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #f8fafc; /* Color de fondo suave */
+}
+
+/* Cuando hay menú, empujamos el contenido en PC */
+@media screen and (min-width: 768px) {
+    .layout-shifted {
+        margin-left: 250px; /* EL MISMO ANCHO QUE EL SIDEBAR */
+        width: calc(100% - 250px);
+    }
+}
